@@ -4,32 +4,50 @@ from __future__ import unicode_literals
 from django.shortcuts import render
 from django.http import HttpResponse
 from simplecrypt import encrypt, decrypt
+from rest_framework_jwt.settings import api_settings
+from rest_framework.parsers import JSONParser
+from rest_framework.decorators import authentication_classes
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.authentication import TokenAuthentication
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import viewsets, status, serializers
+import requests
+from pyethmobisir import EthJsonRpc
 
 
 # Create your views here.
 def register(request):
     return HttpResponse("register service")
 
-def auth():
+
+def auth_bc():
     headers = {'content-type':'application/json'}
     api_data = '{"jsonrpc":"2.0","method":"personal_unlockAccount",\
         "params":["0x76e13c978f42bfd01e5241a0bbf09110db4952f6","techsummit"],"id":"2"}'
     unlock_response = requests.post("http://13.127.33.43", api_data, headers=headers, verify=False)
-    return jsonify({'status': "OK"}), 201
+    return unlock_response
 
 def create_bc_address():
-    auth()
+    auth_bc()
     headers = {'content-type':'application/json'}
     api_data = '{"jsonrpc":"2.0","method":"personal_newAccount","params":["techsummit"],"id":"1"}' 
     created = requests.post("http://13.127.33.43", api_data, headers=headers, verify=False)
     print created
     return created
 
+@api_view(['POST'])
 @authentication_classes((JSONWebTokenAuthentication,))
-def set_user():
+@permission_classes((IsAuthenticated,))
+def set_user(request):
     if request.method == 'POST':
-        auth()
-        
+        auth_bc()
+
         first_name = request.POST.get('first_name', None)
         last_name = request.POST.get('last_name', None)
         dob = request.POST.get('dob', None)
@@ -40,17 +58,19 @@ def set_user():
         email = request.POST.get('email', None)
         finger_print = request.POST.get('finger_print', None)
         bc_address = create_bc_address()
-
-        user_details = '{"first_name":"'+first_name+'",\
-            "last_name":"'+last_name+'",\
-            "father_name":"'+father_name+'",\
-            "dob":"'+dob+'",\
-            "gender":"'+gender+'",\
-            "address":'+address+'",\
-            "mobile":'+mobile+'",\
-            "email":"'+email+'",\
-            "bc_address":"'+bc_address+'",\
-            "finger_print":'+finger_print+'"}'
+                
+        # user_details = '{"first_name":"'+first_name+'",\
+        #     "last_name":"'+last_name+'",\
+        #     "father_name":"'+father_name+'",\
+        #     "dob":"'+dob+'",\
+        #     "gender":"'+gender+'",\
+        #     "address":"'+address+'",\
+        #     "mobile":"'+mobile+'",\
+        #     "email":"'+email+'",\
+        #     "bc_address":"'+bc_address+'",\
+        #     "finger_print":"'+finger_print+'"}'
+        user_details = '{"first_name":"'+first_name+'"}'
+        print user_details
         
         ciphertext = encrypt(finger_print, user_details)
 
@@ -62,11 +82,14 @@ def set_user():
             [ciphertext]
         )
         print transaction
-        return Response(transaction, status=200)
+        res = {}
+        res['transaction'] = transaction
+        return Response(res, status=200)
 
 @authentication_classes((JSONWebTokenAuthentication,))
-def get_user():
-    auth()
+def get_user(request):
+    res = {}
+    auth_bc()
     hash = request.POST.get("hash", None)
     eth_connection = EthJsonRpc("13.127.33.43","80")
     get_transaction_details = eth_connection.eth_getTransactionByHash(hash)
@@ -77,4 +100,5 @@ def get_user():
     plaintext = decrypt(password, get_readable_detail)
     print "plaintext"
     print plaintext
-    return Response(transaction, status=200)
+    res['data'] = plaintext
+    return Response(res, status=200)
