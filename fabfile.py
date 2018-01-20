@@ -4,6 +4,7 @@ from fabric.api import local, run, env, put, task, cd, sudo, settings, hide, pro
 from fabric.tasks import execute
 from fabric.contrib.project import rsync_project
 from fabric.utils import warn
+import identityfabfile as identity
 
 def apt_update():
 	sudo('apt-get update')
