@@ -64,6 +64,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -75,7 +76,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [BASE_TEMPLATE_DIR,],
-        'APP_DIRS': False,
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -104,6 +105,9 @@ DATABASES = {
         "NAME": os.environ.get("DB_NAME", "my_db"),
         "USER": os.environ.get("DB_USER_NAME", "myadmin"),
         "PASSWORD": os.environ.get("DB_USER_PASSWORD", "mypass"),
+        'OPTIONS': {
+          'autocommit': True,
+        },
     }
 }
 # --------------------------------------------------------------------

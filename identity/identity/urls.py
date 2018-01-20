@@ -15,8 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from identity import views
+from oneauth import views as oneauth_views
 
 urlpatterns = [
+    url(r'^$', views.index),
+    url(r'^login/$', oneauth_views.user_login),
+    url(r'^logout/$', oneauth_views.user_logout),
     url(r'^admin/', admin.site.urls),
     url(r'^api-auth/', include('rest_framework.urls')),
     url(r'^oneauth/', include('oneauth.urls')),
