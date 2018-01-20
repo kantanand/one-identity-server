@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import requests
+import json
 from django.shortcuts import render
 from django.http import HttpResponse
 from simplecrypt import encrypt, decrypt
@@ -17,9 +19,11 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets, status, serializers
-import requests
 from pyethmobisir import EthJsonRpc
-import json
+from serializers import UserLoginSerializer
+from datacenter.models import User, UserProfile
+# from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model, login, logout, authenticate
 
 
 # Create your views here.
@@ -98,3 +102,50 @@ def get_user(request):
     get_readable_detail = get_input_hex[138:].decode('hex').split('\x00')[0]
     res['data'] = get_readable_detail
     return Response(res, status=200)
+
+# ---------------------------------------------------------------
+# User Login: JWT and Session Login
+# ---------------------------------------------------------------
+@api_view(['POST'])
+@permission_classes((AllowAny, ))
+def auth_login(request):
+    """
+    User Login and Creating a new jwt token
+    """
+    if request.method == 'POST':
+        # loading jwt payload handlers
+        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+        serializer = UserLoginSerializer(data=request.data)
+        user = None
+        if serializer.is_valid():
+            user_name = serializer.data.get('username')
+            user_pass = serializer.data.get('password')
+            user_exists = User.objects.filter(username=user_name)
+            user = authenticate(username=user_name,password=user_pass)
+            if user:
+                if user.is_active and user.is_staff:
+                    '''
+                    set username and token in response
+                    object if the user need to continue
+                    '''
+                    login(request, user)
+                    payload = jwt_payload_handler(user)
+                    token = jwt_encode_handler(payload)
+                    response_object = {
+                        'username': user.username,
+                        'token': token,
+                        'status': 'success'
+                    }
+                    return Response(response_object, status=status.HTTP_200_OK)
+                else:
+                    response_object = {
+                        'username': user_name,
+                        'status': 'false',
+                        'message': 'Your Account is Locked Please call customer care',
+                    }
+                    return Response(response_object,status=status.HTTP_401_UNAUTHORIZED)
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response(serializer.errors, status=status.HTTP_200_OK)
+# ---------------------------------------------------------------
