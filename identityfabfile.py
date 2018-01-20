@@ -114,13 +114,13 @@ def uwsgi():
 @task
 def nginx():
     run('mkdir -p /tmp/identity')
-    put(webserver+'/certs/*', '/tmp/identity')
+    # put(webserver+'/certs/*', '/tmp/identity')
     run('mkdir -p /tmp/identity/etc/nginx/sites-enabled')
     put(webserver+'/nginx/etc/nginx/sites-enabled/default',
         '/tmp/identity/etc/nginx/sites-enabled/')
     sed('/tmp/identity/etc/nginx/sites-enabled/default',
         "\[SERVER_NAME\]", host_name, backup='')
-    run('sudo cp -r /tmp/identity/* /')
+    # run('sudo cp -r /tmp/identity/* /')
     run('sudo /etc/init.d/nginx restart')
 
 # start uwsgi
