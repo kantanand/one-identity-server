@@ -55,6 +55,7 @@ THIRD_PARTY_APPS = [
 
 # LOCAL APPS DEVELOPED
 LOCAL_APPS = [
+    'datacenter',
     'api',
     'oneauth',
     'home'
