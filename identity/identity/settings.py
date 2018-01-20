@@ -75,13 +75,16 @@ BASE_TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_TEMPLATE_DIR,],
+        'DIRS': [
+            BASE_TEMPLATE_DIR,
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
-            'context_processors': [
+             'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.i18n',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
         },
@@ -176,10 +179,15 @@ STATIC_URL = '/static/'
 LOGIN_URL = '/login/'
 LOGOUT_URL = '/logout/'
 LOGIN_REDIRECT_URL = '/'
-LOGIN_EXEMPT_URLS = (
-    r'^login/*',
-    r'^logout/*',
-    # API URLS - Login , Logout , JWT Token Refresh
-    r'^api/get-auth-token/$',
-)
 # =====================================================================
+
+# =====================================================================
+# GENERAL CONTENT FOR SITE
+# =====================================================================
+PRODUCT_NAME = os.environ.get("PRODUCT_NAME", "Identity")
+DEFAULT_PROTOCOL = os.environ.get("SERVER_PROTOCOL","http")
+DEFAULT_HOST = os.environ.get("SERVER_HOSTNAME","localhost")
+DEFAULT_PORT = os.environ.get("SERVER_PORT","8000")
+DEFAULT_DOMAIN_URL = DEFAULT_PROTOCOL+'://'+DEFAULT_HOST
+# =====================================================================
+
