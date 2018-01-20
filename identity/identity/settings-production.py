@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 import datetime
-from config import *
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '#n(mmg@u9&9e3ye59874-@8^n^-a6c&^3e2k&a$8&8r%3s(q#o'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 SESSION_COOKIE_HTTPONLY = True
 SESSION_ENGINE = 'encrypted_cookies'
@@ -69,6 +68,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -79,13 +79,16 @@ BASE_TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_TEMPLATE_DIR,],
-        'APP_DIRS': False,
+        'DIRS': [
+            BASE_TEMPLATE_DIR,
+        ],
+        'APP_DIRS': True,
         'OPTIONS': {
-            'context_processors': [
+             'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.i18n',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
         },
@@ -109,6 +112,9 @@ DATABASES = {
         "NAME": os.environ.get("DB_NAME", "my_db"),
         "USER": os.environ.get("DB_USER_NAME", "myadmin"),
         "PASSWORD": os.environ.get("DB_USER_PASSWORD", "mypass"),
+        'OPTIONS': {
+          'autocommit': True,
+        },
     }
 }
 # --------------------------------------------------------------------
@@ -137,13 +143,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+TIME_ZONE = 'Asia/Calcutta'
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 REST_FRAMEWORK = {
@@ -170,21 +172,46 @@ JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
 }
 
+# =====================================================================
+# File Manager
+# =====================================================================
+# to store files temporary path
+FILE_UPLOAD_HANDLERS = (
+    "django.core.files.uploadhandler.TemporaryFileUploadHandler",
+)
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+)
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
+STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static")
 STATIC_URL = '/static/'
-
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+)
+# MEDIA PATH for local
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = "/media/"
+# =====================================================================
 # =====================================================================
 # Login - Logout - Login Exemtp & Auth URLs
 # =====================================================================
 LOGIN_URL = '/login/'
 LOGOUT_URL = '/logout/'
 LOGIN_REDIRECT_URL = '/'
-LOGIN_EXEMPT_URLS = (
-    r'^login/*',
-    r'^logout/*',
-    # API URLS - Login , Logout , JWT Token Refresh
-    r'^api/get-auth-token/$',
-)
 # =====================================================================
+
+# =====================================================================
+# GENERAL CONTENT FOR SITE
+# =====================================================================
+PRODUCT_NAME = os.environ.get("PRODUCT_NAME", "Identity")
+DEFAULT_PROTOCOL = os.environ.get("SERVER_PROTOCOL","http")
+DEFAULT_HOST = os.environ.get("SERVER_HOSTNAME","localhost")
+DEFAULT_PORT = os.environ.get("SERVER_PORT","8000")
+DEFAULT_DOMAIN_URL = DEFAULT_PROTOCOL+'://'+DEFAULT_HOST
+# =====================================================================
+
