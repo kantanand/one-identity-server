@@ -26,6 +26,5 @@ pytz==2017.3
 singledispatch==3.4.0.3
 six==1.11.0
 wrapt==1.10.11
-simple-crypt==4.1.7
 requests==2.18.4
 pyethmobisir==0.1

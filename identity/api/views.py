@@ -19,6 +19,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets, status, serializers
 import requests
 from pyethmobisir import EthJsonRpc
+import json
 
 
 # Create your views here.
@@ -58,35 +59,35 @@ def set_user(request):
         email = request.POST.get('email', None)
         finger_print = request.POST.get('finger_print', None)
         bc_address = create_bc_address()
-                
-        # user_details = '{"first_name":"'+first_name+'",\
-        #     "last_name":"'+last_name+'",\
-        #     "father_name":"'+father_name+'",\
-        #     "dob":"'+dob+'",\
-        #     "gender":"'+gender+'",\
-        #     "address":"'+address+'",\
-        #     "mobile":"'+mobile+'",\
-        #     "email":"'+email+'",\
-        #     "bc_address":"'+bc_address+'",\
-        #     "finger_print":"'+finger_print+'"}'
-        user_details = '{"first_name":"'+first_name+'"}'
-        print user_details
         
-        ciphertext = encrypt(finger_print, user_details)
-
+        user_details = {}
+        user_details['first_name'] = first_name
+        user_details['last_name'] = last_name
+        user_details['father_name'] = father_name
+        user_details['dob'] = dob
+        user_details['gender'] = gender
+        user_details['address'] = address
+        user_details['mobile'] = mobile
+        user_details['email'] = email
+        user_details['bc_address'] = json.loads(bc_address.content)['result']
+        user_details['finger_print'] = finger_print
+        
         eth_connection = EthJsonRpc("13.127.33.43","80")
         transaction = eth_connection.call_with_transaction(
             eth_connection.eth_coinbase(),
             "0x3aed98631ABb156fF525b4CaE202E6bDe3402bF0",
             'set_s(string)',
-            [ciphertext]
+            [str(json.dumps(user_details))]
         )
         print transaction
         res = {}
         res['transaction'] = transaction
         return Response(res, status=200)
 
+
+@api_view(['POST'])
 @authentication_classes((JSONWebTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def get_user(request):
     res = {}
     auth_bc()
@@ -95,10 +96,5 @@ def get_user(request):
     get_transaction_details = eth_connection.eth_getTransactionByHash(hash)
     get_input_hex = get_transaction_details['input']
     get_readable_detail = get_input_hex[138:].decode('hex').split('\x00')[0]
-    print "get_readable_detail"
-    print get_readable_detail
-    plaintext = decrypt(password, get_readable_detail)
-    print "plaintext"
-    print plaintext
-    res['data'] = plaintext
+    res['data'] = get_readable_detail
     return Response(res, status=200)
