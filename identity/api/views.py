@@ -133,9 +133,9 @@ def auth_login(request):
                     payload = jwt_payload_handler(user)
                     token = jwt_encode_handler(payload)
                     response_object = {
-                        'username': user.username,
+                        # 'username': user.username,
                         'token': token,
-                        'status': 'success'
+                        # 'status': 'success'
                     }
                     return Response(response_object, status=status.HTTP_200_OK)
                 else:

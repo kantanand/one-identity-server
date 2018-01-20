@@ -26,12 +26,13 @@ SECRET_KEY = '#n(mmg@u9&9e3ye59874-@8^n^-a6c&^3e2k&a$8&8r%3s(q#o'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-SESSION_COOKIE_HTTPONLY = True
-SESSION_ENGINE = 'encrypted_cookies'
-ENCRYPTED_COOKIE_KEYS = ['kmYZJ7W6yL9kdz-dA4tv_qXoAMQ_Dbl64BRh2RJFeAE=']
+# SESSION_COOKIE_HTTPONLY = True
+# SESSION_ENGINE = 'encrypted_cookies'
+# ENCRYPTED_COOKIE_KEYS = ['kmYZJ7W6yL9kdz-dA4tv_qXoAMQ_Dbl64BRh2RJFeAE=']
 
 ALLOWED_HOSTS = [
     'localhost',
+    '127.0.0.1',
     '[SERVER_NAME]',
 ]
 

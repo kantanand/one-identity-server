@@ -15,6 +15,17 @@ def user_login(request):
         LOGIN_URL = settings.LOGIN_URL
         next_url = request.GET.get('next', settings.LOGIN_REDIRECT_URL)
         return render(request, 'login.html', locals())
+    if request.method == 'POST':
+        user_name = request.POST.get("username", None)
+        user_pass = request.POST.get("password", None)
+        print "user_name {}".format(user_name)
+        print "user_pass {}".format(user_pass)
+        if user_name and user_pass:
+            user = authenticate(username=user_name, password=user_pass)
+            if user:
+                if user.is_active:
+                    login(request, user)
+                    return HttpResponseRedirect('/')
 
 @login_required
 def user_logout(request):
