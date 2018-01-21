@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script  src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="bower_components/web3/dist/web3.min.js"></script>
+        <style>
+            div.container {
+                width: 100%;
+                border: 1px solid gray;
+            }
+
+            header, footer {
+                padding: 1em;
+                color: white;
+                background-color: #337ab7;
+                clear: left;
+                text-align: center;
+            }
+
+            nav {
+                float: left;
+                max-width: 160px;
+                margin: 0;
+                padding: 1em;
+            }
+
+            nav ul {
+                list-style-type: none;
+                padding: 0;
+            }
+            nav ul a {
+                text-decoration: none;
+            }
+            .link-color{
+                color: white;
+            }
+            .right-content{
+                margin-left: 10%;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <header>
+                <div class="row">
+                    <div class="col-12">
+                        <h2>GDIA Government Digital Identity Authority</h2>
+                    </div>
+                    <div class="col-6">
+                        <h5>
+                            Admin Portal
+                        </h5>
+                    </div>
+                </div>
+            </header>
+            <div  class="container">
+                <div class="row">
+                    <div class="col-6">
+                        <form>
+                            <div class="form-group col-md-4 form-line">
+                                <h3>User Enrollment </h3>
+                                <lable for="name">Name</lable>
+                                <input class="form-control" type="text" id="name" name="name"/><br/>
+                                <lable for="mobile">Mobile</lable>
+                                <input class="form-control" type="text" id="mobile" name="mobile"/><br/>
+                                <lable for="email">Email</lable>
+                                <input class="form-control" type="text" id="email" name="email"/><br/>
+                                <lable for="age">Age</lable>
+                                <input class="form-control" type="text" id="age" name="age"/><br/>
+                                <lable for="gender">Gender</lable>
+                                <input class="form-control" type="text" id="gender" name="gender"/><br/>
+                                <button type="button" class="btn btn-default btn-primary" style="float: right" onclick="enterUser();">
+                                    Submit
+                                </submit>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group col-md-6 form-line right-content">
+                            <h3>User HASH </h3>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-addon">#HASH</span>
+                                        <input type="text" class="form-control" placeholder="HASH">
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div id="user_hash">
+                                        QR code
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer>
+                Team: Mobisir - Blockchain Technology GOK
+            </footer>
+        </div>
+        <script type="text/javascript">
+            
+            var web3 = new Web3(new Web3.providers.HttpProvider("http://13.127.33.43"));
+            var coinbase = web3.eth.coinbase;
+            var balance = web3.eth.getBalance(coinbase);
+            var abi = JSON.parse('[{\"constant\":false,\"inputs\":[],\"name\":\"get_s\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"new_s\",\"type\":\"string\"}],\"name\":\"set_s\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]');
+            var cont = web3.eth.contract(abi).at("0x118C40432BdE99a1D066dF4C0D57A1637Ea4824a");
+            sign();
+            function enterUser(){
+                var name = document.getElementById('name').value;
+                var mobile = document.getElementById('mobile').value;
+                var email = document.getElementById('email').value;
+                var age = document.getElementById('age').value;
+                var gender = document.getElementById('gender').value;
+                var dict = []; // create an empty array
+                dict.push({
+                    name:name,
+                    mobile: mobile,
+                    email:email,
+                    age:age,
+                    gender:gender
+                });
+                var dt = JSON.stringify(dict);
+                cont.set_s.sendTransaction(dt, {from:coinbase, gas:250000}, function(err, transactionHash){
+                    if(!err){ 
+                        generatedQRcode(transactionHash);
+                        alert(transactionHash); 
+                    }
+                    else{ alert(err); }
+                });
+            }
+            function searchKey(){
+                var content = "";
+                var hash = document.getElementById('hash').value;
+                data = web3.eth.getTransaction(hash);
+                content = content + data['input'];
+                document.getElementById("details").innerHTML = web3.toAscii(content);
+            }
+            
+            function sign(){
+                web3.personal.unlockAccount(coinbase, 'techsumit', 60);
+            }
+
+        </script>
+    </body>
+
+</html>

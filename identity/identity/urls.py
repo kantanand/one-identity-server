@@ -19,7 +19,7 @@ from identity import views
 from oneauth import views as oneauth_views
 
 urlpatterns = [
-    url(r'^$', include('home.urls')),
+    url(r'^', include('home.urls')),
     url(r'^login/$', oneauth_views.user_login),
     url(r'^logout/$', oneauth_views.user_logout),
     url(r'^admin/', admin.site.urls),
