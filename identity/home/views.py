@@ -8,4 +8,4 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 @login_required
 def index(request):
-    return HttpResponse("home page service")
+    return render(request, 'index.html', locals())

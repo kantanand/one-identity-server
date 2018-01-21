@@ -6,9 +6,12 @@ from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+
 
 
 # Create your views here.
+@csrf_exempt
 def user_login(request):
     if request.method == 'GET':
         TITLE = 'Login'
