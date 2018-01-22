@@ -38,80 +38,99 @@
             .link-color{
                 color: white;
             }
+            .right-content{
+                margin-left: 10%;
+            }
+            .padding-5{
+                padding-left: 5%;
+            }
+            .btn-test {
+                margin-top: 2%;
+                margin-left: 3%;
+            }
         </style>
     </head>
     <body>
         <div class="container">
             <header>
-                <h2>IdentityALL</h2>
-                <h4>Blockchain Technology</h4>
+                <div class="row">
+                    <div class="col-12">
+                        <h2>GDIA Government Digital Identity Authority</h2>
+                    </div>
+                    <div class="col-6">
+                        <h5>
+                            Agency Portal
+                        </h5>
+                    </div>
+                </div>
             </header>
             <div  class="container">
-                <form>
-                    <div class="form-group col-md-4 form-line">
-                        <h3>Fill Your Identity card details</h3>
-                        <lable for="name">Name</lable>
-                        <input class="form-control" type="text" id="name" name="name"/><br/>
-                        <lable for="mobile">Mobile</lable>
-                        <input class="form-control" type="text" id="mobile" name="mobile"/><br/>
-                        <lable for="email">Email</lable>
-                        <input class="form-control" type="text" id="email" name="email"/><br/>
-                        <lable for="age">Age</lable>
-                        <input class="form-control" type="text" id="age" name="age"/><br/>
-                        <lable for="gender">Gender</lable>
-                        <input class="form-control" type="text" id="gender" name="gender"/><br/>
-                        <button type="button" class="btn btn-default btn-primary" style="float: right" onclick="enterUser();">
-                            Submit
-                        </submit>
+                <div class="row">
+                    <div class="col-6">
+                        <form>
+                            <div class="form-group col-md-6 form-line">
+                                <h3>Search HASH </h3>
+                                <div class="row">
+                                    <div class="col-3">
+                                        <div class="input-group padding-5">
+                                            <span class="input-group-addon">#HASH</span>
+                                            <input type="text" class="form-control" placeholder="HASH">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-3 btn-test">
+                                        <div class="input-group padding-5; margin-top:10%;">
+                                            <button type="button" class="btn btn-default btn-primary" 
+                                            style="float: right;" 
+                                                onclick="searchKey();">
+                                            Submit
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                </form>
-                <form>
-                    <h3>Search Key</h3>
-                    <div class="form-group col-md-8 form-line">
-                        <lable for="hash">Hash Key</lable>
-                        <input class="form-control" type="text" id="hash" name="hash"/><br/>
-                        <button type="button" class="btn btn-default btn-primary" style="float: right" onclick="searchKey();">Search</submit>
+                    <div class="col-6">
+                        <form>
+                            <div class="form-group col-md-4 form-line right-content">
+                                <h3>Hash details</h3>
+                                <div class="checkbox">
+                                    <lable for="name">Name</lable>
+                                    <label>Balakrishnan</label>
+                                </div>
+                                
+                                <div class="checkbox">
+                                    <lable for="mobile">Mobile</lable>
+                                    <label>88884156349</label>
+                                </div>
+        
+                                <div class="checkbox">
+                                    <lable for="email">Email</lable>
+                                    <label>bala@gmail.com</label>
+                                </div>
+        
+                                <div class="checkbox">
+                                    <lable for="age">Age</lable>
+                                    <label>27</label>
+                                </div>
+                                
+                                <div class="checkbox">
+                                    <lable for="gender">Gender</lable>
+                                    <label>Male</label>
+                                </div>
+                                <button type="button" class="btn btn-default btn-primary" style="float: right" onclick="enterUser();">
+                                    validate
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                </form>
-                <div id="details">
-
                 </div>
             </div>
-            <div  class="container">
-                <form>
-                    <div class="form-group col-md-4 form-line">
-                        <h3>Fill Your Identity card details</h3>
-                        <div class="checkbox">
-                            <lable for="age">Name</lable>
-                            <label><input type="checkbox" id="name" value="Balakrishnan">Balakrishnan</label>
-                        </div>
-                        
-                        <div class="checkbox">
-                            <lable for="age">Mobile</lable>
-                            <label><input type="checkbox" id="mobile" value="88884156349">88884156349</label>
-                        </div>
-
-                        <div class="checkbox">
-                            <lable for="age">Email</lable>
-                            <label><input type="checkbox" id="mobile" value="bala@gmail.com">bala@gmail.com</label>
-                        </div>
-
-                        <div class="checkbox">
-                            <lable for="age">Age</lable>
-                            <label><input type="checkbox" id="age" value="27">27</label>
-                        </div>
-                        
-                        <div class="checkbox">
-                            <lable for="age">Gender</lable>
-                            <label><input type="checkbox" id="gender" value="Male">Male</label>
-                        </div>
-                        <button type="button" class="btn btn-default btn-primary" style="float: right" onclick="enterUser();">
-                            Submit
-                        </submit>
-                    </div>
-                </form>
-            </div>
-            <footer>Copyright &copy; <a class="link-color" href="http://www.mobisir.net">Mobisir</a></footer>
+            <footer>
+                Team: Mobisir - Blockchain Technology GOK
+            </footer>
         </div>
         <script type="text/javascript">
             

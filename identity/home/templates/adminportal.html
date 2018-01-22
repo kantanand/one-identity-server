@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+{% load staticfiles %}
+{% load static %}
 <html>
     <head>
         <meta charset="utf-8">
@@ -6,7 +8,9 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script  src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        <script src="bower_components/web3/dist/web3.min.js"></script>
+        <script src="{% static 'bower_components/web3/dist/web3.js' %}"></script>
+        <script src="{% static 'jquery-qrcode/jquery.qrcode.min.js' %}"></script>
+
         <style>
             div.container {
                 width: 100%;
@@ -86,12 +90,11 @@
                                 <div class="col-6">
                                     <div class="input-group input-group-lg">
                                         <span class="input-group-addon">#HASH</span>
-                                        <input type="text" class="form-control" placeholder="HASH">
+                                        <input type="text" id="hash" class="form-control" placeholder="HASH">
                                     </div>
                                 </div>
                                 <div class="col-6">
-                                    <div id="user_hash">
-                                        QR code
+                                    <div id="qrcode">
                                     </div>
                                 </div>
                             </div>
@@ -128,8 +131,10 @@
                 var dt = JSON.stringify(dict);
                 cont.set_s.sendTransaction(dt, {from:coinbase, gas:250000}, function(err, transactionHash){
                     if(!err){ 
-                        generatedQRcode(transactionHash);
-                        alert(transactionHash); 
+                        // generatedQRcode(transactionHash);
+                        alert("Created Successfully "); 
+                        var hash = document.getElementById('hash').value = transactionHash;
+                        $('#qrcode').qrcode(transactionHash);
                     }
                     else{ alert(err); }
                 });
@@ -143,7 +148,7 @@
             }
             
             function sign(){
-                web3.personal.unlockAccount(coinbase, 'techsumit', 60);
+                web3.personal.unlockAccount(coinbase, 'techsummit', 60);
             }
 
         </script>
