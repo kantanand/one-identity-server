@@ -1,12 +1,14 @@
 <!DOCTYPE html>
+{% load staticfiles %}
+{% load static %}
 <html>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <script  src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        <script src="bower_components/web3/dist/web3.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="{% static 'bower_components/web3/dist/web3.js' %}"></script>
         <style>
             div.container {
                 width: 100%;
@@ -55,7 +57,7 @@
             <header>
                 <div class="row">
                     <div class="col-12">
-                        <h2>GDIA Government Digital Identity Authority</h2>
+                        <h2>User Identity Management</h2>
                     </div>
                     <div class="col-6">
                         <h5>
@@ -74,7 +76,7 @@
                                     <div class="col-3">
                                         <div class="input-group padding-5">
                                             <span class="input-group-addon">#HASH</span>
-                                            <input type="text" class="form-control" placeholder="HASH">
+                                            <input type="text" class="form-control" id="hash" placeholder="HASH">
                                         </div>
                                     </div>
                                 </div>
@@ -89,12 +91,13 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row" id="details"></div>
                             </div>
                         </form>
                     </div>
-                    <div class="col-6">
+                    <div class="col-6" id ='user_details' style="display:none;">
                         <form>
-                            <div class="form-group col-md-4 form-line right-content">
+                            <div class="form-group col-md-4 form-line right-content" >
                                 <h3>Hash details</h3>
                                 <div class="checkbox">
                                     <lable for="name">Name</lable>
@@ -113,12 +116,12 @@
         
                                 <div class="checkbox">
                                     <lable for="age">Age</lable>
-                                    <label>27</label>
+                                    <label>hidden</label>
                                 </div>
                                 
                                 <div class="checkbox">
                                     <lable for="gender">Gender</lable>
-                                    <label>Male</label>
+                                    <label>hidden</label>
                                 </div>
                                 <button type="button" class="btn btn-default btn-primary" style="float: right" onclick="enterUser();">
                                     validate
@@ -140,39 +143,41 @@
             var abi = JSON.parse('[{\"constant\":false,\"inputs\":[],\"name\":\"get_s\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"new_s\",\"type\":\"string\"}],\"name\":\"set_s\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]');
             var cont = web3.eth.contract(abi).at("0x118C40432BdE99a1D066dF4C0D57A1637Ea4824a");
             sign();
-            function enterUser(){
-                var name = document.getElementById('name').value;
-                var mobile = document.getElementById('mobile').value;
-                var email = document.getElementById('email').value;
-                var age = document.getElementById('age').value;
-                var gender = document.getElementById('gender').value;
-                var dict = []; // create an empty array
-                dict.push({
-                    name:name,
-                    mobile: mobile,
-                    email:email,
-                    age:age,
-                    gender:gender
-                });
-                var dt = JSON.stringify(dict);
-                cont.set_s.sendTransaction(dt, {from:coinbase, gas:250000}, function(err, transactionHash){
-                    if(!err){ 
-                        generatedQRcode(transactionHash);
-                        alert(transactionHash); 
-                    }
-                    else{ alert(err); }
-                });
-            }
+            // function enterUser(){
+            //     var name = document.getElementById('name').value;
+            //     var mobile = document.getElementById('mobile').value;
+            //     var email = document.getElementById('email').value;
+            //     var age = document.getElementById('age').value;
+            //     var gender = document.getElementById('gender').value;
+            //     var dict = []; // create an empty array
+            //     dict.push({
+            //         name:name,
+            //         mobile: mobile,
+            //         email:email,
+            //         age:age,
+            //         gender:gender
+            //     });
+            //     var dt = JSON.stringify(dict);
+            //     cont.set_s.sendTransaction(dt, {from:coinbase, gas:250000}, function(err, transactionHash){
+            //         if(!err){ 
+            //             generatedQRcode(transactionHash);
+            //             alert(transactionHash); 
+            //         }
+            //         else{ alert(err); }
+            //     });
+            // }
+            
             function searchKey(){
                 var content = "";
                 var hash = document.getElementById('hash').value;
                 data = web3.eth.getTransaction(hash);
                 content = content + data['input'];
                 document.getElementById("details").innerHTML = web3.toAscii(content);
+                $('#user_details').show();
             }
             
             function sign(){
-                web3.personal.unlockAccount(coinbase, 'techsumit', 60);
+                web3.personal.unlockAccount(coinbase, 'techsummit', 60);
             }
 
         </script>

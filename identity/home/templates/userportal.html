@@ -9,6 +9,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script  src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script src="{% static 'bower_components/web3/dist/web3.js' %}"></script>
+        <script src="{% static 'jquery-qrcode/jquery.qrcode.min.js' %}"></script>
         <style>
             div.container {
                 width: 100%;
@@ -62,7 +63,7 @@
             <header>
                 <div class="row">
                     <div class="col-12">
-                        <h2>GDIA Government Digital Identity Authority</h2>
+                        <h2>User Identity Management</h2>
                     </div>
                     <div class="col-6">
                         <h5>
@@ -81,7 +82,9 @@
                                     <div class="col-3">
                                         <div class="input-group padding-5">
                                             <span class="input-group-addon">#HASH</span>
-                                            <input type="text" class="form-control" placeholder="HASH" id="hash">
+                                            <input type="text" class="form-control" placeholder="HASH" id="hash"
+                                                value="0x707f9b7d8134d8cca0f85d6ceb0ad262e701eff77b5d27945b62c13e31a4ab58"
+                                                >
                                         </div>
                                     </div>
                                 </div>
@@ -99,13 +102,26 @@
                                 <div class="row" id="details">
 
                                 </div>
+                                <div class="row" id ='user_subhash' style="display:none;">
+                                    <div class="col-3">
+                                        <div class="input-group padding-5">
+                                            <span class="input-group-addon">#SUB-HASH</span>
+                                            <input type="text" class="form-control" placeholder="HASH" id="subhash"
+                                                value=""
+                                                >
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" id="qrcode">
+
+                                </div>
                             </div>
                         </form>
                     </div>
-                    <div class="col-6">
+                    <div class="col-6" id ='user_details' style="display:none;">
                         <form>
                             <div class="form-group col-md-4 form-line right-content">
-                                <h3>Fill Your Identity card details</h3>
+                                <h3>Select Your Identity details to share</h3>
                                 <div class="checkbox">
                                     <lable for="age">Name</lable>
                                     <label><input type="checkbox" id="name" value="Balakrishnan">Balakrishnan</label>
@@ -118,19 +134,20 @@
         
                                 <div class="checkbox">
                                     <lable for="age">Email</lable>
-                                    <label><input type="checkbox" id="mobile" value="bala@gmail.com">bala@gmail.com</label>
+                                    <label><input type="checkbox" id="email" value="bala@gmail.com">bala@gmail.com</label>
                                 </div>
         
                                 <div class="checkbox">
                                     <lable for="age">Age</lable>
-                                    <label><input type="checkbox" id="age" value="27">27</label>
+                                    <label><input type="checkbox" id="age" value="hidden">27</label>
                                 </div>
                                 
                                 <div class="checkbox">
                                     <lable for="age">Gender</lable>
-                                    <label><input type="checkbox" id="gender" value="Male">Male</label>
+                                    <label><input type="checkbox" id="gender" value="hidden">Male</label>
                                 </div>
-                                <button type="button" class="btn btn-default btn-primary" style="float: right" onclick="enterUser();">
+                                <button type="button" class="btn btn-default btn-primary" style="float: right" 
+                                    onclick="generate_sub_hash();">
                                     Gemerate
                                 </button>
                             </div>
@@ -150,35 +167,41 @@
             var abi = JSON.parse('[{\"constant\":false,\"inputs\":[],\"name\":\"get_s\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"new_s\",\"type\":\"string\"}],\"name\":\"set_s\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]');
             var cont = web3.eth.contract(abi).at("0x118C40432BdE99a1D066dF4C0D57A1637Ea4824a");
             sign();
-            // function enterUser(){
-            //     var name = document.getElementById('name').value;
-            //     var mobile = document.getElementById('mobile').value;
-            //     var email = document.getElementById('email').value;
-            //     var age = document.getElementById('age').value;
-            //     var gender = document.getElementById('gender').value;
-            //     var dict = []; // create an empty array
-            //     dict.push({
-            //         name:name,
-            //         mobile: mobile,
-            //         email:email,
-            //         age:age,
-            //         gender:gender
-            //     });
-            //     var dt = JSON.stringify(dict);
-            //     cont.set_s.sendTransaction(dt, {from:coinbase, gas:250000}, function(err, transactionHash){
-            //         if(!err){ 
-            //             generatedQRcode(transactionHash);
-            //             alert(transactionHash); 
-            //         }
-            //         else{ alert(err); }
-            //     });
-            // }
+            function generate_sub_hash(){
+                sign();
+                var name = document.getElementById('name').value;
+                var mobile = document.getElementById('mobile').value;
+                var email = document.getElementById('email').value;
+                var age = document.getElementById('age').value;
+                var gender = document.getElementById('gender').value;
+                var dict = []; // create an empty array
+                dict.push({
+                    name:name,
+                    mobile: mobile,
+                    email:email,
+                    age:age,
+                    gender:gender
+                });
+                var dt = JSON.stringify(dict);
+                cont.set_s.sendTransaction(dt, {from:coinbase, gas:250000}, function(err, transactionHash){
+                    if(!err){ 
+                        // generatedQRcode(transactionHash);
+                        // alert(transactionHash); 
+                        alert("Created sub hash Successfully ");
+                        $('#user_subhash').show();
+                        var hash = document.getElementById('subhash').value = transactionHash;
+                        $('#qrcode').qrcode(transactionHash);
+                    }
+                    else{ alert(err); }
+                });
+            }
             function searchKey(){
                 var content = "";
                 var hash = document.getElementById('hash').value;
                 data = web3.eth.getTransaction(hash);
                 content = content + data['input'];
                 document.getElementById("details").innerHTML = web3.toAscii(content);
+                $('#user_details').show();
             }
             
             function sign(){
