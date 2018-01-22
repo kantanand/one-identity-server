@@ -30,29 +30,50 @@ from django.contrib.auth import get_user_model, login, logout, authenticate
 def register(request):
     return HttpResponse("register service")
 
+def auth_bc():
+    """
+    Getting auth from blockchain server
+    """
+    headers = {'content-type':'application/json'}
+    api_data = '{"jsonrpc":"2.0","method":"personal_unlockAccount",\
+        "params":["0xb778bbb8afb24713f006a407e2b3a2cf8a1fcb3e","techsummit"],"id":"2"}'
+    unlock_response = requests.post("http://13.127.33.43", api_data, headers=headers, verify=False)
+    return unlock_response
 
-# def auth_bc():
-#     headers = {'content-type':'application/json'}
-#     api_data = '{"jsonrpc":"2.0","method":"personal_unlockAccount",\
-#         "params":["0x76e13c978f42bfd01e5241a0bbf09110db4952f6","techsummit"],"id":"2"}'
-#     unlock_response = requests.post("http://13.127.33.43", api_data, headers=headers, verify=False)
-#     return unlock_response
-
-# def create_bc_address():
-#     auth_bc()
-#     headers = {'content-type':'application/json'}
-#     api_data = '{"jsonrpc":"2.0","method":"personal_newAccount","params":["techsummit"],"id":"1"}' 
-#     created = requests.post("http://13.127.33.43", api_data, headers=headers, verify=False)
-#     print created
-#     return created
+def create_bc_address():
+    """
+    create blockchain account for each user
+    """
+    auth_bc()
+    headers = {'content-type':'application/json'}
+    api_data = '{"jsonrpc":"2.0","method":"personal_newAccount","params":["techsummit"],"id":"1"}' 
+    created = requests.post("http://13.127.33.43", api_data, headers=headers, verify=False)
+    return created
+# ---------
+# Api's
+# ---------
+@api_view(['GET'])
+@authentication_classes((JSONWebTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
+def auth_bcn():
+    """
+    Getting auth of blockchain server
+    """
+    headers = {'content-type':'application/json'}
+    api_data = '{"jsonrpc":"2.0","method":"personal_unlockAccount",\
+        "params":["0xb778bbb8afb24713f006a407e2b3a2cf8a1fcb3e","techsummit"],"id":"2"}'
+    unlock_response = requests.post("http://13.127.33.43", api_data, headers=headers, verify=False)
+    return unlock_response
 
 @api_view(['POST'])
 @authentication_classes((JSONWebTokenAuthentication,))
 @permission_classes((IsAuthenticated,))
 def set_user(request):
+    """
+    Set user details on blockchain
+    """
     if request.method == 'POST':
-        # auth_bc()
-
+        auth_bc()
         first_name = request.POST.get('first_name', None)
         last_name = request.POST.get('last_name', None)
         dob = request.POST.get('dob', None)
@@ -62,7 +83,7 @@ def set_user(request):
         mobile = request.POST.get('mobile', None)
         email = request.POST.get('email', None)
         finger_print = request.POST.get('finger_print', None)
-        # bc_address = create_bc_address()
+        bc_address = create_bc_address()
         
         user_details = {}
         user_details['first_name'] = first_name
@@ -73,19 +94,18 @@ def set_user(request):
         user_details['address'] = address
         user_details['mobile'] = mobile
         user_details['email'] = email
-        # user_details['bc_address'] = json.loads(bc_address.content)['result']
+        user_details['bc_address'] = json.loads(bc_address.content)['result']
         user_details['finger_print'] = finger_print
         
-        # eth_connection = EthJsonRpc("13.127.33.43","80")
-        # transaction = eth_connection.call_with_transaction(
-        #     eth_connection.eth_coinbase(),
-        #     "0x3aed98631ABb156fF525b4CaE202E6bDe3402bF0",
-        #     'set_s(string)',
-        #     [str(json.dumps(user_details))]
-        # )
-        # print transaction
+        eth_connection = EthJsonRpc("13.127.33.43","80")
+        transaction = eth_connection.call_with_transaction(
+            eth_connection.eth_coinbase(),
+            "0x3aed98631ABb156fF525b4CaE202E6bDe3402bF0",
+            'set_s(string)',
+            [str(json.dumps(user_details))]
+        )
         res = {}
-        # res['transaction'] = transaction
+        res['transaction'] = transaction
         return Response(res, status=200)
 
 
@@ -93,13 +113,16 @@ def set_user(request):
 @authentication_classes((JSONWebTokenAuthentication,))
 @permission_classes((IsAuthenticated,))
 def get_user(request):
+    """
+    Getting user latest block details
+    """
     res = {}
-    # auth_bc()
-    # hash = request.POST.get("hash", None)
-    # eth_connection = EthJsonRpc("13.127.33.43","80")
-    # get_transaction_details = eth_connection.eth_getTransactionByHash(hash)
-    # get_input_hex = get_transaction_details['input']
-    # get_readable_detail = get_input_hex[138:].decode('hex').split('\x00')[0]
+    auth_bc()
+    hash = request.POST.get("hash", None)
+    eth_connection = EthJsonRpc("13.127.33.43","80")
+    get_transaction_details = eth_connection.eth_getTransactionByHash(hash)
+    get_input_hex = get_transaction_details['input']
+    get_readable_detail = get_input_hex[138:].decode('hex').split('\x00')[0]
     res['data'] = 'get_readable_detail'
     return Response(res, status=200)
 
@@ -148,4 +171,3 @@ def auth_login(request):
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
             return Response(serializer.errors, status=status.HTTP_200_OK)
-# ---------------------------------------------------------------
