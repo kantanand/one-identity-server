@@ -5,7 +5,7 @@ cffi==1.11.4
 chardet==3.0.4
 configparser==3.5.0
 cryptography==2.1.4
-Django==1.11
+Django==1.11.28
 django-app-namespace-template-loader==0.4.1
 djangorestframework==3.7.7
 djangorestframework-jwt==1.11.0
