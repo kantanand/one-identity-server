@@ -7,7 +7,7 @@ configparser==3.5.0
 cryptography==2.1.4
 Django==1.11
 django-app-namespace-template-loader==0.4.1
-djangorestframework==3.7.7
+djangorestframework==3.11.2
 djangorestframework-jwt==1.11.0
 enum34==1.1.6
 Fabric==1.14.0
